@@ -1,0 +1,17 @@
+aqi_today
+aqi_1d_ago
+aqi_2d_ago
+aqi_7d_ago
+roll3_mean
+roll7_mean
+roll7_std
+change_1d
+PM2.5_today
+PM10_today
+NO2_today
+CO_today
+SO2_today
+O3_today
+month_sin
+month_cos
+day_of_week
