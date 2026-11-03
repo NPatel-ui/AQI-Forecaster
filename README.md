@@ -1,295 +1,386 @@
-# AQI Forecaster
+# 🌍 AQI Forecaster
 
-A historical, city-based Air Quality Index (AQI) forecasting backend
-built with Python, FastAPI, and machine learning.
+<div align="center">
 
-The project uses historical air-quality data from Indian cities to
-estimate the AQI for the next calendar day. It currently focuses on
-historical forecasting and model evaluation. **It does not fetch live
-AQI readings or provide real-time forecasts.**
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:14532D,50:166534,100:84CC16&height=220&section=header&text=AQI%20Forecaster&fontSize=55&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=Environmental%20Data%20Analytics%20%7C%20Machine%20Learning%20%7C%20Air%20Quality%20Forecasting&descAlignY=58&descSize=16" width="100%" />
 
-## Project Overview
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=20&duration=3000&pause=1000&color=22C55E&center=true&vCenter=true&width=750&lines=Understand+Air+Pollution.;Explore+Historical+AQI+Patterns.;Compare+Cities+Through+Data.;Forecast+Next-Day+Air+Quality.)](https://git.io/typing-svg)
 
-Air pollution can change from day to day and from city to city. This
-project explores how historical AQI values and pollutant measurements
-can be used to estimate the following day's AQI.
+<br/>
 
-The backend provides: - A machine-learning prediction endpoint that
-accepts AQI-related input features. - A city-based endpoint that
-retrieves a historical feature record and predicts the next day's AQI. -
-Health and root endpoints for checking whether the API is running.
+[![GitHub Stars](https://img.shields.io/github/stars/NPatel-ui/AQI-Forecaster?style=for-the-badge&color=166534)](https://github.com/NPatel-ui/AQI-Forecaster/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/NPatel-ui/AQI-Forecaster?style=for-the-badge&color=65A30D)](https://github.com/NPatel-ui/AQI-Forecaster/network)
+[![GitHub Issues](https://img.shields.io/github/issues/NPatel-ui/AQI-Forecaster?style=for-the-badge&color=CA8A04)](https://github.com/NPatel-ui/AQI-Forecaster/issues)
+[![GitHub License](https://img.shields.io/github/license/NPatel-ui/AQI-Forecaster?style=for-the-badge&color=2563EB)](LICENSE)
 
-## Current Project Scope
+<br/>
 
-**Implemented** - Historical dataset cleaning and exploratory data
-analysis. - Daily feature engineering using AQI history, pollutant
-measurements, and calendar features. - City-based train/test separation
-to evaluate performance on cities not used for training. - A Random
-Forest regression pipeline with median imputation. - FastAPI endpoints
-for direct predictions and historical city-based forecasts. - Evaluation
-against a persistence baseline.
+**An intelligent environmental analytics platform for exploring historical air pollution patterns, comparing cities, and forecasting next-day Air Quality Index (AQI) using Machine Learning.**
 
-**Planned for future development** - Integration of a live AQI data
-source. - Real-time next-day forecasting using current observations. - A
-React + Vite frontend. - A Personal Health Advisor. - Deployment.
+</div>
 
-These future features are not part of the current implementation.
+---
 
-## Dataset
+## 🌱 About The Project
 
-The project uses the **City Day** air-quality dataset covering Indian
-cities.
+Air pollution is one of the major environmental challenges affecting urban populations around the world.
 
-  Detail               Value
-  -------------------- -------------------------------
-  File                 `data/raw/city_day.csv`
-  Records              29,531
-  Original columns     16
-  Cities               26
-  Date range           1 January 2015 -- 1 July 2020
-  Missing AQI values   4,681
+Understanding air quality requires more than simply looking at an AQI number. Historical pollution patterns, city-level comparisons, data visualizations, and forecasting can help people better understand how air quality changes over time.
 
-The dataset contains city and date information, pollutant measurements,
-AQI, and AQI category information.
+**AQI Forecaster** is an environmental data analytics and forecasting platform designed to make historical air pollution data easier to explore and understand.
 
-The dataset is historical. It does not contain current 2026 readings.
+The platform combines data visualization, machine learning, and an interactive web interface to provide insights into air quality trends and next-day AQI forecasts.
 
-The project history identifies the dataset as the Kaggle Air Quality
-Data in India dataset by Rohan Rao. Check the dataset's Kaggle page and
-licence before redistributing the original CSV. Add the exact source URL
-here once it has been confirmed.
+### 🎯 Project Objectives
 
-## Machine Learning Approach
+- Analyze historical air pollution data.
+- Explore AQI patterns across Indian cities.
+- Visualize environmental trends through interactive charts.
+- Compare air quality between different cities.
+- Generate next-day AQI forecasts using Machine Learning.
+- Provide an organized platform for environmental data exploration.
 
-The prediction task is a regression problem:
+---
 
-**Input:** Historical AQI, recent AQI trends, selected pollutant
-measurements, and calendar features.
+## ✨ Key Features
 
-**Target:** The observed AQI on the next calendar day.
+| Feature | Description |
+|---|---|
+| 📊 Interactive Analytics | Explore historical AQI trends through visualizations. |
+| 🌆 City Analysis | Analyze historical air quality patterns for supported cities. |
+| 🔮 AQI Forecasting | Generate next-day AQI predictions using a trained Random Forest model. |
+| ⚖️ City Comparison | Compare historical air quality across cities. |
+| 👤 User Authentication | Secure signup, email verification and login using Supabase. |
+| 🗂️ User Profiles | Manage personal profile information and preferences. |
+| ⭐ Saved Forecasts | Save and retrieve forecasts associated with your account. |
+| 📈 Data Visualization | Present complex environmental data through an interactive interface. |
 
-The final model is a scikit-learn `Pipeline` containing: 1. Median
-imputation for missing feature values. 2. `RandomForestRegressor` for
-AQI prediction.
+---
 
-The model uses 17 engineered features, including: - Current and previous
-AQI values. - Rolling AQI mean and standard deviation. - One-day AQI
-change. - Selected pollutant measurements. - Month and day-of-week
-features.
+## 🖥️ Application Preview
 
-The saved model is located at:
+<div align="center">
 
-``` text
-models/random_forest_aqi.joblib
+<!-- Add your actual application screenshots here -->
+
+| Dashboard | Analytics |
+|:---:|:---:|
+| ![Dashboard](screenshots/dashboard.png) | ![Analytics](screenshots/analytics.png) |
+
+| Forecast | City Comparison |
+|:---:|:---:|
+| ![Forecast](screenshots/forecast.png) | ![Comparison](screenshots/comparison.png) |
+
+</div>
+
+> Replace the screenshot paths with actual screenshots from your application. Create a `screenshots/` directory in the repository before adding them.
+
+---
+
+## 🧠 Machine Learning
+
+AQI Forecaster uses a **Random Forest Regressor** to estimate next-day AQI values using historical environmental information.
+
+### Model Information
+
+| Component | Details |
+|---|---|
+| Algorithm | Random Forest Regressor |
+| Learning Type | Supervised Machine Learning |
+| Problem Type | Regression |
+| Dataset | Air Quality Data in India |
+| Dataset Source | Kaggle – Rohan Rao |
+| Training Framework | Scikit-learn |
+| Missing Value Handling | Median Imputation |
+| Input Features | 17 features |
+
+### 📊 Model Evaluation
+
+The model was evaluated using held-out test data.
+
+| Evaluation Metric | Test A | Test B |
+|---|---:|---:|
+| MAE | 22.3391 | 17.0824 |
+| RMSE | 34.7380 | 24.7688 |
+| R² Score | 0.8606 | 0.8482 |
+
+**Held-out city validation:**
+
+- MAE: 21.7067
+- RMSE: 33.6951
+- R² Score: 0.8633
+
+These results represent the recorded evaluation experiments for the model. They should not be interpreted as guaranteed forecasting accuracy for every city or date.
+
+---
+
+## 📂 Dataset Information
+
+The project uses the **Air Quality Data in India** dataset by Rohan Rao.
+
+| Dataset Property | Information |
+|---|---|
+| File | `city_day.csv` |
+| Total Records | 29,531 |
+| Total Columns | 16 in the original dataset |
+| Cities | 26 |
+| Start Date | 1 January 2015 |
+| End Date | 1 July 2020 |
+| Data Type | Historical air quality measurements |
+
+The dataset contains historical measurements and pollutant information, including AQI and different air pollution indicators.
+
+**Important:** The current project uses historical data ending on 1 July 2020. It is a historical forecasting and analytics platform, not a live AQI monitoring service.
+
+---
+
+## 🏗️ System Architecture
+
+AQI Forecaster uses a modular architecture in which the frontend, authentication service, database, and machine learning backend have separate responsibilities.
+
+```mermaid
+flowchart TD
+    A["User"] --> B["React + Vite Frontend"]
+
+    B --> C["Supabase Authentication"]
+    B --> D["Supabase PostgreSQL"]
+    B --> E["FastAPI Backend"]
+
+    C --> F["User Sessions"]
+    D --> G["Profiles & Preferences"]
+    D --> H["Saved Forecasts"]
+
+    E --> I["Data Processing"]
+    I --> J["Random Forest Model"]
+    J --> K["Next-Day AQI Prediction"]
+
+    K --> B
+    F --> B
+    G --> B
+    H --> B
 ```
 
-The corresponding feature-name list is:
+### Architecture Responsibilities
 
-``` text
-models/feature_names.txt
-```
+| Component | Responsibility |
+|---|---|
+| React + Vite | User interface and application experience |
+| Supabase Auth | Signup, login, email verification and sessions |
+| Supabase PostgreSQL | User profiles, preferences and saved forecasts |
+| FastAPI | Machine learning API and forecast requests |
+| Scikit-learn | Random Forest AQI prediction model |
 
-## Model Evaluation
+---
 
-The model was evaluated on five held-out cities that were not included
-in the training-city group.
+## ⚙️ Technology Stack
 
-  Evaluation set   Model                      MAE    RMSE       R²
-  ---------------- ---------------------- ------- ------- --------
-  Test A           Random Forest            22.34   34.74   0.8606
-  Test A           Persistence baseline     25.49   42.39   0.7925
-  Test B           Random Forest            17.08   24.77   0.8482
-  Test B           Persistence baseline     18.49   28.89   0.7935
+<div align="center">
 
--   **MAE** measures the average absolute prediction error. Lower is
-    better.
--   **RMSE** penalizes larger errors more strongly. Lower is better.
--   **R²** indicates how much of the variation in the target is
-    explained by the model. Higher is generally better.
+### Frontend
 
-The Random Forest model performed better than the persistence baseline
-on both held-out test sets. These results describe evaluation on this
-historical dataset; they do not guarantee the same performance on live
-data or future conditions.
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 
-## Backend API
+### Backend
 
-The API is built with FastAPI.
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 
-  -----------------------------------------------------------------------
-  Method                  Endpoint                Purpose
-  ----------------------- ----------------------- -----------------------
-  `GET`                   `/`                     Root endpoint
+### Machine Learning & Data Science
 
-  `GET`                   `/health`               Health check
+![Scikit Learn](https://img.shields.io/badge/Scikit--Learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
+![NumPy](https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white)
+![Matplotlib](https://img.shields.io/badge/Matplotlib-11557C?style=for-the-badge&logo=plotly&logoColor=white)
 
-  `POST`                  `/predict`              Predict AQI from 17
-                                                  supplied numeric
-                                                  features
+### Database & Services
 
-  `GET`                   `/forecast/{city}`      Generate a historical
-                                                  next-day forecast for a
-                                                  city
-  -----------------------------------------------------------------------
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)
 
-The city forecast endpoint also accepts an optional `date` query
-parameter. Use the `YYYY-MM-DD` format.
+</div>
 
-### Example requests
+---
 
-Open the interactive API documentation after starting the server:
+## 🚀 Getting Started
 
-``` text
-http://127.0.0.1:8000/docs
-```
+Follow these instructions to run the project locally.
 
-Example city forecast request:
+### 1. Clone the Repository
 
-``` text
-GET http://127.0.0.1:8000/forecast/Delhi
-```
-
-Example with a date:
-
-``` text
-GET http://127.0.0.1:8000/forecast/Delhi?date=2020-07-01
-```
-
-The city endpoint uses the historical feature record for the requested
-date and predicts the following calendar day's AQI. It is not a live
-forecast.
-
-## Project Structure
-
-The following is the main backend layout:
-
-``` text
-backend/
-├── data/
-│   ├── raw/
-│   │   └── city_day.csv
-│   └── processed/
-├── models/
-│   ├── random_forest_aqi.joblib
-│   └── feature_names.txt
-├── report/
-│   ├── eda/
-│   └── evaluation outputs
-└── src/
-    ├── main.py
-    ├── data_service.py
-    ├── prediction_service.py
-    └── data preparation, training, evaluation, and testing scripts
-```
-
-The `src` directory contains the Python scripts for data preparation,
-exploratory analysis, feature engineering, data splitting, model
-training, evaluation, API services, and tests.
-
-## Setup and Run
-
-### 1. Clone the repository
-
-``` bash
+```bash
 git clone https://github.com/NPatel-ui/AQI-Forecaster.git
+
 cd AQI-Forecaster
 ```
 
-### 2. Open the backend directory
+### 2. Frontend Setup
 
-``` bash
-cd backend
+Navigate to the frontend directory:
+
+```bash
+cd frontend
 ```
 
-### 3. Create and activate a virtual environment
+Install dependencies:
 
-Windows Command Prompt:
-
-``` bat
-python -m venv .venv
-.venv\Scripts\activate
+```bash
+npm install
 ```
 
-Windows PowerShell:
+Create a `.env` file inside the frontend directory:
 
-``` powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
 ```
 
-### 4. Install the backend packages
+Start the frontend:
 
-The project archive used to prepare this README did not include a
-`requirements.txt` file. Install the packages required by the backend:
-
-``` bash
-python -m pip install --upgrade pip
-pip install fastapi uvicorn pandas numpy scikit-learn joblib
+```bash
+npm run dev
 ```
 
-If a script reports a missing package, install the package it names. A
-pinned `requirements.txt` should be added after confirming the exact
-working package versions.
+### 3. Backend Setup
 
-### 5. Start the API
+Open another terminal and navigate to the backend directory.
 
-From the `backend` directory, run:
+Create and activate a Python virtual environment:
 
-``` bash
-uvicorn src.main:app --reload
+```bash
+python -m venv venv
 ```
 
-Then open:
+Windows activation:
 
-``` text
+```bash
+venv\Scripts\activate
+```
+
+Install the backend dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Start the FastAPI application:
+
+```bash
+uvicorn main:app --reload
+```
+
+> Adjust the module name and command if your existing backend uses a different entry point.
+
+The FastAPI interactive documentation is generally available at:
+
+```text
 http://127.0.0.1:8000/docs
 ```
 
-If your local package layout requires running from the `src` directory
-instead, follow the import structure in `src/main.py`; the command above
-assumes `src` is importable as a Python package.
+### 4. Supabase Configuration
 
-## Notes and Limitations
+1. Create a Supabase project.
+2. Execute the SQL schema provided in `frontend/supabase/schema.sql`.
+3. Configure the authentication Site URL and Redirect URLs.
+4. Add your Supabase project URL and publishable key to `frontend/.env`.
+5. Restart the Vite development server.
 
--   This project uses historical data ending on **1 July 2020**.
--   The city-based forecast is a historical-data demonstration, not a
-    current AQI service.
--   AQI values above 500 were retained in the source data during
-    preprocessing rather than capped or removed.
--   Some pollutant and AQI values are missing. The model pipeline uses
-    median imputation for missing model features.
--   Model performance can differ by city. An overall metric does not
-    mean every city's predictions have the same error.
--   The model should be evaluated on new, reliable data before being
-    used for operational or health-related decisions.
--   The predictions are estimates and should not be treated as official
-    AQI measurements or medical advice.
+Never commit your actual `.env` file or expose a Supabase secret/service-role key.
 
-## Technologies Used
+---
 
--   Python
--   Pandas and NumPy
--   Matplotlib and Seaborn for exploratory data analysis
--   scikit-learn
--   Joblib
--   FastAPI
--   Uvicorn
+## 🔌 API Endpoints
 
-## Future Work
+The existing FastAPI backend exposes the following endpoints:
 
-1.  Connect a reliable live AQI data provider.
-2.  Build a pipeline for current observations and real-time next-day
-    forecasts.
-3.  Develop a responsive React + Vite frontend.
-4.  Add the Personal Health Advisor module.
-5.  Test and deploy the complete application.
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Backend root endpoint |
+| GET | `/health` | Health check |
+| POST | `/predict` | Prediction endpoint |
+| GET | `/forecast/{city}?date=YYYY-MM-DD` | Generate next-day AQI forecast using historical features for the specified date |
 
-## Author
+The forecast endpoint uses the requested historical feature date to generate a prediction for the following calendar day.
 
-**Nitya Patel**\
-B.Sc. Information Technology
+---
 
-------------------------------------------------------------------------
+## 🔐 Security
 
-*This README describes the currently implemented historical forecasting
-backend and separates it from planned future features.*
+AQI Forecaster uses Supabase security features to protect user-owned information.
+
+- Supabase Auth handles user authentication.
+- Row Level Security protects user-owned database records.
+- Users can access only their own profiles and saved forecasts.
+- Publishable keys are used for frontend integration.
+- Secret and service-role keys must remain private.
+
+---
+
+## 🗺️ Future Improvements
+
+The project can be extended with:
+
+- 🌐 Integration of live AQI data sources.
+- 🛰️ Real-time air pollution monitoring.
+- 🌍 More geographical coverage.
+- 📍 Location-based AQI insights.
+- 📱 Mobile application support.
+- 🧠 Experiments with additional machine learning models.
+- 📊 More advanced environmental analytics.
+- 🔔 Personalized air quality notifications.
+
+---
+
+## 🤝 Contributing
+
+Contributions, suggestions, and improvements are welcome.
+
+1. Fork the repository.
+2. Create a new feature branch.
+3. Make your changes.
+4. Commit your changes.
+5. Submit a pull request.
+
+```bash
+git checkout -b feature/your-feature-name
+
+git add .
+
+git commit -m "Add: your feature description"
+
+git push origin feature/your-feature-name
+```
+
+---
+
+## 👨‍💻 Author
+
+<div align="center">
+
+### Nitya Patel
+
+**B.Sc. Information Technology | AI/ML Enthusiast | Developer**
+
+Building technology-driven solutions using Machine Learning, data analytics, and modern web development.
+
+[![GitHub](https://img.shields.io/badge/GitHub-NPatel--ui-181717?style=for-the-badge&logo=github)](https://github.com/NPatel-ui)
+
+[![Repository](https://img.shields.io/badge/View_Project-AQI_Forecaster-166534?style=for-the-badge&logo=github)](https://github.com/NPatel-ui/AQI-Forecaster)
+
+</div>
+
+---
+
+<div align="center">
+
+### 🌍 Making Air Quality Data Easier to Understand.
+
+**Explore. Analyze. Forecast. Understand.**
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:84CC16,50:166534,100:14532D&height=120&section=footer" width="100%" />
+
+</div>
