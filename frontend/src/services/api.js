@@ -1,11 +1,26 @@
 import axios from 'axios';
 
-// Vite proxy forwards /api -> http://127.0.0.1:8000
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+// Deployed backend service URL on Render
+const DEPLOYED_BACKEND_URL = 'https://aqi-forecaster-qxxn.onrender.com';
+
+// Local development fallback only
+const LOCAL_BACKEND_URL = 'http://127.0.0.1:8000';
+
+// Determine API base URL:
+// 1. Explicit VITE_API_URL from environment variables (if provided)
+// 2. Local development: use '/api' (handled by Vite dev proxy) or localhost
+// 3. Production: deployed Render backend URL
+const rawEnvUrl = import.meta.env.VITE_API_URL?.trim();
+export const API_BASE = rawEnvUrl
+  ? rawEnvUrl.replace(/\/$/, '')
+  : import.meta.env.DEV
+  ? '/api'
+  : DEPLOYED_BACKEND_URL;
 
 export const apiClient = axios.create({
   baseURL: API_BASE,
-  timeout: 8000,
+  // 30-second timeout to safely accommodate Render free-tier cold starts
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -23,21 +38,25 @@ export async function checkBackendHealth() {
       error: null,
     };
   } catch (err) {
-    // Also try direct localhost:8000 if proxy failed
-    try {
-      const direct = await axios.get('http://127.0.0.1:8000/health', { timeout: 3000 });
-      return {
-        connected: true,
-        data: direct.data,
-        error: null,
-      };
-    } catch {
-      return {
-        connected: false,
-        data: null,
-        error: err.response?.data?.detail || err.message || 'Backend service unreachable',
-      };
+    // Only attempt direct localhost fallback during local development
+    if (import.meta.env.DEV) {
+      try {
+        const direct = await axios.get(`${LOCAL_BACKEND_URL}/health`, { timeout: 3000 });
+        return {
+          connected: true,
+          data: direct.data,
+          error: null,
+        };
+      } catch {
+        // Fall through to error reporting
+      }
     }
+
+    return {
+      connected: false,
+      data: null,
+      error: err.response?.data?.detail || err.message || 'Backend service unreachable',
+    };
   }
 }
 
@@ -58,30 +77,33 @@ export async function getCityForecast(city, date = null) {
       error: null,
     };
   } catch (err) {
-    // Try direct fallback
-    try {
-      const params = date ? { date } : {};
-      const direct = await axios.get(`http://127.0.0.1:8000/forecast/${encodeURIComponent(city)}`, {
-        params,
-        timeout: 5000,
-      });
-      return {
-        success: true,
-        data: direct.data,
-        error: null,
-      };
-    } catch (secondErr) {
-      const message =
-        secondErr.response?.data?.detail ||
-        err.response?.data?.detail ||
-        err.message ||
-        'Failed to connect to forecasting model API';
-      return {
-        success: false,
-        data: null,
-        error: message,
-      };
+    // Only attempt direct localhost fallback during local development
+    if (import.meta.env.DEV) {
+      try {
+        const params = date ? { date } : {};
+        const direct = await axios.get(`${LOCAL_BACKEND_URL}/forecast/${encodeURIComponent(city)}`, {
+          params,
+          timeout: 5000,
+        });
+        return {
+          success: true,
+          data: direct.data,
+          error: null,
+        };
+      } catch {
+        // Fall through to error reporting
+      }
     }
+
+    const message =
+      err.response?.data?.detail ||
+      err.message ||
+      'Failed to connect to forecasting model API';
+    return {
+      success: false,
+      data: null,
+      error: message,
+    };
   }
 }
 
@@ -97,6 +119,20 @@ export async function postManualPredict(features) {
       error: null,
     };
   } catch (err) {
+    // Only attempt direct localhost fallback during local development
+    if (import.meta.env.DEV) {
+      try {
+        const direct = await axios.post(`${LOCAL_BACKEND_URL}/predict`, features, { timeout: 5000 });
+        return {
+          success: true,
+          data: direct.data,
+          error: null,
+        };
+      } catch {
+        // Fall through to error reporting
+      }
+    }
+
     return {
       success: false,
       data: null,
@@ -104,4 +140,3 @@ export async function postManualPredict(features) {
     };
   }
 }
-
