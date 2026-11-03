@@ -11,7 +11,6 @@
 [![GitHub Stars](https://img.shields.io/github/stars/NPatel-ui/AQI-Forecaster?style=for-the-badge&color=166534)](https://github.com/NPatel-ui/AQI-Forecaster/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/NPatel-ui/AQI-Forecaster?style=for-the-badge&color=65A30D)](https://github.com/NPatel-ui/AQI-Forecaster/network)
 [![GitHub Issues](https://img.shields.io/github/issues/NPatel-ui/AQI-Forecaster?style=for-the-badge&color=CA8A04)](https://github.com/NPatel-ui/AQI-Forecaster/issues)
-[![GitHub License](https://img.shields.io/github/license/NPatel-ui/AQI-Forecaster?style=for-the-badge&color=2563EB)](LICENSE)
 
 <br/>
 
@@ -46,34 +45,61 @@ The platform combines data visualization, machine learning, and an interactive w
 
 | Feature | Description |
 |---|---|
-| 📊 Interactive Analytics | Explore historical AQI trends through visualizations. |
-| 🌆 City Analysis | Analyze historical air quality patterns for supported cities. |
-| 🔮 AQI Forecasting | Generate next-day AQI predictions using a trained Random Forest model. |
-| ⚖️ City Comparison | Compare historical air quality across cities. |
-| 👤 User Authentication | Secure signup, email verification and login using Supabase. |
-| 🗂️ User Profiles | Manage personal profile information and preferences. |
+| 📊 Interactive Dashboard | Explore AQI information and city-level summaries. |
+| 📈 Historical Analytics | Study seasonal patterns, AQI distributions and historical trends. |
+| 🌆 City Analysis | Analyze historical air quality across supported cities. |
+| 🔮 AQI Forecasting | Generate next-day AQI predictions using a Random Forest model. |
+| ⚖️ City Comparison | Compare historical air quality between cities. |
+| 👤 User Authentication | Signup, email verification and login using Supabase. |
+| 🗂️ User Profiles | Manage personal information and preferences. |
 | ⭐ Saved Forecasts | Save and retrieve forecasts associated with your account. |
-| 📈 Data Visualization | Present complex environmental data through an interactive interface. |
+| 📊 Data Visualization | Explore environmental data through interactive charts and graphs. |
 
 ---
 
-## 🖥️ Application Preview
+## 🖥️ Application Screenshots
+
+Explore the actual AQI Forecaster application.
+
+### 1. Dashboard
+
+The main dashboard provides an overview of historical air quality, selected city information, AQI classification, and model context.
 
 <div align="center">
 
-<!-- Add your actual application screenshots here -->
-
-| Dashboard | Analytics |
-|:---:|:---:|
-| ![Dashboard](screenshots/dashboard.png) | ![Analytics](screenshots/analytics.png) |
-
-| Forecast | City Comparison |
-|:---:|:---:|
-| ![Forecast](screenshots/forecast.png) | ![Comparison](screenshots/comparison.png) |
+![AQI Forecaster Dashboard](screenshots/dashboard.png)
 
 </div>
 
-> Replace the screenshot paths with actual screenshots from your application. Create a `screenshots/` directory in the repository before adding them.
+### 2. Historical Analytics
+
+Explore historical pollution patterns through monthly seasonality, AQI category distribution, city-level averages, and yearly analysis.
+
+<div align="center">
+
+![AQI Forecaster Historical Analytics](screenshots/analytics.png)
+
+</div>
+
+### 3. City Comparison
+
+Compare historical AQI averages, model errors, reporting records, and monthly seasonal patterns across two cities.
+
+<div align="center">
+
+![AQI Forecaster City Comparison](screenshots/comparison.png)
+
+</div>
+
+### 4. Next-Day AQI Forecasting
+
+Select a supported city and historical base date to generate a next-day AQI prediction, with CPCB classification and pollutant context.
+
+<div align="center">
+
+![AQI Forecaster Next-Day Forecast](screenshots/forecast.png)
+
+</div>
 
 ---
 
@@ -110,7 +136,7 @@ The model was evaluated using held-out test data.
 - RMSE: 33.6951
 - R² Score: 0.8633
 
-These results represent the recorded evaluation experiments for the model. They should not be interpreted as guaranteed forecasting accuracy for every city or date.
+These are recorded evaluation results, not guaranteed prediction accuracy for every city or date.
 
 ---
 
@@ -128,9 +154,9 @@ The project uses the **Air Quality Data in India** dataset by Rohan Rao.
 | End Date | 1 July 2020 |
 | Data Type | Historical air quality measurements |
 
-The dataset contains historical measurements and pollutant information, including AQI and different air pollution indicators.
+The dataset contains historical AQI measurements and pollutant information, including different air pollution indicators.
 
-**Important:** The current project uses historical data ending on 1 July 2020. It is a historical forecasting and analytics platform, not a live AQI monitoring service.
+> **Important:** The current dataset ends on 1 July 2020. AQI Forecaster currently provides historical analytics and historical next-day forecasting. It does not provide live AQI monitoring.
 
 ---
 
@@ -193,7 +219,7 @@ flowchart TD
 ![Scikit Learn](https://img.shields.io/badge/Scikit--Learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)
 ![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
 ![NumPy](https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white)
-![Matplotlib](https://img.shields.io/badge/Matplotlib-11557C?style=for-the-badge&logo=plotly&logoColor=white)
+![Matplotlib](https://img.shields.io/badge/Matplotlib-11557C?style=for-the-badge&logo=matplotlib&logoColor=white)
 
 ### Database & Services
 
@@ -247,35 +273,39 @@ npm run dev
 
 ### 3. Backend Setup
 
-Open another terminal and navigate to the backend directory.
+Open another terminal at the repository root.
 
-Create and activate a Python virtual environment:
+Navigate to the backend:
+
+```bash
+cd backend
+```
+
+Create a Python virtual environment:
 
 ```bash
 python -m venv venv
 ```
 
-Windows activation:
+Activate it on Windows:
 
 ```bash
 venv\Scripts\activate
 ```
 
-Install the backend dependencies:
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Start the FastAPI application:
+Start FastAPI from the backend directory:
 
 ```bash
-uvicorn main:app --reload
+uvicorn src.main:app --reload
 ```
 
-> Adjust the module name and command if your existing backend uses a different entry point.
-
-The FastAPI interactive documentation is generally available at:
+The API documentation is generally available at:
 
 ```text
 http://127.0.0.1:8000/docs
@@ -285,8 +315,8 @@ http://127.0.0.1:8000/docs
 
 1. Create a Supabase project.
 2. Execute the SQL schema provided in `frontend/supabase/schema.sql`.
-3. Configure the authentication Site URL and Redirect URLs.
-4. Add your Supabase project URL and publishable key to `frontend/.env`.
+3. Configure authentication Site URL and Redirect URLs.
+4. Add the project URL and publishable key to `frontend/.env`.
 5. Restart the Vite development server.
 
 Never commit your actual `.env` file or expose a Supabase secret/service-role key.
@@ -302,7 +332,7 @@ The existing FastAPI backend exposes the following endpoints:
 | GET | `/` | Backend root endpoint |
 | GET | `/health` | Health check |
 | POST | `/predict` | Prediction endpoint |
-| GET | `/forecast/{city}?date=YYYY-MM-DD` | Generate next-day AQI forecast using historical features for the specified date |
+| GET | `/forecast/{city}?date=YYYY-MM-DD` | Generate a next-day AQI forecast using historical features for the specified date |
 
 The forecast endpoint uses the requested historical feature date to generate a prediction for the following calendar day.
 
@@ -321,8 +351,6 @@ AQI Forecaster uses Supabase security features to protect user-owned information
 ---
 
 ## 🗺️ Future Improvements
-
-The project can be extended with:
 
 - 🌐 Integration of live AQI data sources.
 - 🛰️ Real-time air pollution monitoring.
