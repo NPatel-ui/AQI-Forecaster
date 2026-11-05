@@ -5,6 +5,7 @@ import joblib
 import pandas as pd
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 # Support both package imports and direct script execution
@@ -47,6 +48,23 @@ app = FastAPI(
         "and historical city-level air-quality data."
     ),
     version="1.2.0",
+)
+
+
+# --------------------------------------------------
+# CORS CONFIGURATION
+# --------------------------------------------------
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://aqi-forecaster-app.vercel.app",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
