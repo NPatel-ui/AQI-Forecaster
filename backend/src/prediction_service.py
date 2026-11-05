@@ -10,10 +10,12 @@ except ImportError:
     from data_service import get_city_features
 
 
-# Project directory
+# --------------------------------------------------
+# PROJECT PATHS
+# --------------------------------------------------
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-# Saved model and feature names
 MODEL_PATH = (
     PROJECT_ROOT
     / "models"
@@ -27,8 +29,12 @@ FEATURE_NAMES_PATH = (
 )
 
 
+# --------------------------------------------------
+# LOAD TRAINED MODEL
+# --------------------------------------------------
+
 def load_model():
-    """Load the already-trained Random Forest pipeline."""
+    """Load the trained Random Forest model and feature names."""
 
     if not MODEL_PATH.exists():
         raise FileNotFoundError(
@@ -57,17 +63,27 @@ def load_model():
     return model, feature_names
 
 
-# Load the model once when this module is imported
+# Load the model once when the module is imported
 MODEL, MODEL_FEATURES = load_model()
 
 
+# --------------------------------------------------
+# CITY-BASED AQI PREDICTION
+# --------------------------------------------------
+
 def predict_city_aqi(city: str, selected_date=None):
     """
-    Predict next-day AQI for a selected city
-    using historical dataset features.
+    Predict next-day AQI using historical city data.
+
+    Returns:
+        - Predicted AQI
+        - Historical observed AQI
+        - Actual pollutant readings
+        - Forecast dates
+        - Model information
     """
 
-    # Retrieve city-specific features
+    # Retrieve city-specific historical features
     city_data = get_city_features(
         city=city,
         selected_date=selected_date
@@ -81,20 +97,58 @@ def predict_city_aqi(city: str, selected_date=None):
         for name in MODEL_FEATURES
     }
 
-    # Convert features into a DataFrame
-    input_data = pd.DataFrame([feature_values])
+    # Check for missing model inputs
+    missing_features = [
+        name
+        for name, value in feature_values.items()
+        if value is None
+    ]
+
+    if missing_features:
+        raise ValueError(
+            "Cannot generate prediction because these model "
+            f"features are missing: {missing_features}"
+        )
+
+    # Convert model inputs into a DataFrame
+    input_data = pd.DataFrame(
+        [feature_values],
+        columns=MODEL_FEATURES
+    )
 
     # Generate prediction
     prediction = MODEL.predict(input_data)[0]
 
+    # Extract actual historical pollutant readings
+    pollutant_features = {
+        "PM2.5_today": features.get("PM2.5_today"),
+        "PM10_today": features.get("PM10_today"),
+        "NO2_today": features.get("NO2_today"),
+        "CO_today": features.get("CO_today"),
+        "SO2_today": features.get("SO2_today"),
+        "O3_today": features.get("O3_today"),
+    }
+
     return {
         "city": city_data["city"],
+
         "feature_date": city_data["feature_date"],
+
         "prediction_for_date": city_data["prediction_for_date"],
+
         "observed_aqi_on_feature_date": (
             city_data["observed_aqi_on_feature_date"]
         ),
-        "predicted_next_day_aqi": round(float(prediction), 2),
+
+        "predicted_next_day_aqi": round(
+            float(prediction), 2
+        ),
+
+        "features": features,
+
+        "pollutants": pollutant_features,
+
         "model": "Random Forest Regressor",
+
         "data_mode": "historical"
     }
