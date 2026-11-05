@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -10,17 +11,51 @@ import {
   HeartPulse,
   ChevronRight,
 } from 'lucide-react';
+
 import { Navbar } from '../components/navigation/Navbar';
 import { Footer } from '../components/navigation/Footer';
 import { Button } from '../components/ui/Button';
 import { BentoCard } from '../components/ui/BentoCard';
-import { MODEL_BENCHMARKS, ELIGIBLE_CITIES } from '../utils/datasetInfo';
+import { ELIGIBLE_CITIES } from '../utils/datasetInfo';
 import { useAuth } from '../context/AuthContext';
+import { getModelBenchmarks } from '../services/api';
 
 export function LandingPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+
   const [demoCity, setDemoCity] = useState('Delhi');
+
+  // Model benchmark state
+  const [benchmarkData, setBenchmarkData] = useState(null);
+  const [benchmarkLoading, setBenchmarkLoading] = useState(true);
+  const [benchmarkError, setBenchmarkError] = useState(null);
+
+  // Fetch benchmark results from FastAPI
+  useEffect(() => {
+    let active = true;
+
+    async function loadBenchmarks() {
+      const result = await getModelBenchmarks();
+
+      if (!active) return;
+
+      if (result.success) {
+        setBenchmarkData(result.data.benchmarks);
+        setBenchmarkError(null);
+      } else {
+        setBenchmarkError(result.error);
+      }
+
+      setBenchmarkLoading(false);
+    }
+
+    loadBenchmarks();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const demoForecasts = {
     Delhi: {
@@ -69,7 +104,8 @@ export function LandingPage() {
     },
   };
 
-  const currentDemo = demoForecasts[demoCity] || demoForecasts.Delhi;
+  const currentDemo =
+    demoForecasts[demoCity] || demoForecasts.Delhi;
 
   const handleStart = () => {
     navigate(isAuthenticated ? '/dashboard' : '/signin');
@@ -83,6 +119,7 @@ export function LandingPage() {
       <section className="pt-10 pb-16 md:pt-16 md:pb-24 border-b border-[#E3E8E1]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+
             {/* Left Hero Column */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
@@ -92,18 +129,23 @@ export function LandingPage() {
             >
               <h1 className="text-3xl sm:text-5xl font-extrabold font-heading text-[#17231C] tracking-tight leading-tight">
                 Understand the Air. <br className="hidden sm:inline" />
-                <span className="text-[#173D2D]">Anticipate Tomorrow.</span>
+                <span className="text-[#173D2D]">
+                  Anticipate Tomorrow.
+                </span>
               </h1>
 
               <p className="text-sm sm:text-base text-[#69766E] leading-relaxed">
-                Explore historical air quality and next-day forecasts across 18 major Indian cities,
-                trained on Central Pollution Control Board (CPCB) observations.
+                Explore historical air quality and next-day forecasts across
+                18 major Indian cities, trained on Central Pollution Control
+                Board (CPCB) observations.
               </p>
 
               {/* CTAs */}
               <div className="flex flex-wrap items-center gap-3 pt-1">
                 <Button
-                  onClick={() => navigate(isAuthenticated ? '/forecast' : '/signin')}
+                  onClick={() =>
+                    navigate(isAuthenticated ? '/forecast' : '/signin')
+                  }
                   variant="primary"
                   size="md"
                   icon={ArrowRight}
@@ -111,6 +153,7 @@ export function LandingPage() {
                 >
                   Generate Next-Day Forecast
                 </Button>
+
                 <Button
                   onClick={handleStart}
                   variant="secondary"
@@ -126,19 +169,27 @@ export function LandingPage() {
                   <div className="text-xl sm:text-2xl font-bold font-heading text-[#173D2D]">
                     29,531
                   </div>
-                  <div className="text-xs text-[#69766E]">Daily Records</div>
+                  <div className="text-xs text-[#69766E]">
+                    Daily Records
+                  </div>
                 </div>
+
                 <div>
                   <div className="text-xl sm:text-2xl font-bold font-heading text-[#173D2D]">
                     18 Cities
                   </div>
-                  <div className="text-xs text-[#69766E]">Indian Metros</div>
+                  <div className="text-xs text-[#69766E]">
+                    Indian Metros
+                  </div>
                 </div>
+
                 <div>
                   <div className="text-xl sm:text-2xl font-bold font-heading text-[#173D2D]">
                     2015–2020
                   </div>
-                  <div className="text-xs text-[#69766E]">Dataset Scope</div>
+                  <div className="text-xs text-[#69766E]">
+                    Dataset Scope
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -151,9 +202,13 @@ export function LandingPage() {
               className="lg:col-span-5 min-w-0"
             >
               <div className="rounded-2xl bg-[#102C22] text-white p-5 sm:p-6 border border-[#173D2D] shadow-md space-y-4">
+
                 {/* City Picker Pills */}
                 <div className="flex items-center justify-between pb-3 border-b border-white/10 gap-2">
-                  <span className="text-xs text-[#A8BFA9] font-medium">Sample Preview</span>
+                  <span className="text-xs text-[#A8BFA9] font-medium">
+                    Sample Preview
+                  </span>
+
                   <div className="flex items-center gap-1">
                     {['Delhi', 'Mumbai', 'Bengaluru', 'Kolkata'].map((c) => (
                       <button
@@ -174,7 +229,10 @@ export function LandingPage() {
                 {/* Main Forecast Numbers */}
                 <div className="flex items-baseline justify-between gap-3">
                   <div>
-                    <div className="text-xs text-[#A8BFA9]">Predicted AQI</div>
+                    <div className="text-xs text-[#A8BFA9]">
+                      Predicted AQI
+                    </div>
+
                     <div className="text-4xl font-extrabold font-heading text-white mt-0.5">
                       {currentDemo.predicted}
                     </div>
@@ -195,31 +253,54 @@ export function LandingPage() {
                 {/* Metrics */}
                 <div className="grid grid-cols-2 gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-xs">
                   <div>
-                    <span className="text-[#A8BFA9] block text-[11px]">Observed Base:</span>
-                    <span className="font-semibold text-white font-mono">{currentDemo.observed} AQI</span>
+                    <span className="text-[#A8BFA9] block text-[11px]">
+                      Observed Base:
+                    </span>
+                    <span className="font-semibold text-white font-mono">
+                      {currentDemo.observed} AQI
+                    </span>
                   </div>
+
                   <div>
-                    <span className="text-[#A8BFA9] block text-[11px]">City Error (MAE):</span>
-                    <span className="font-semibold text-[#B7E46A] font-mono">±{currentDemo.mae}</span>
+                    <span className="text-[#A8BFA9] block text-[11px]">
+                      City Error (MAE):
+                    </span>
+                    <span className="font-semibold text-[#B7E46A] font-mono">
+                      ±{currentDemo.mae}
+                    </span>
                   </div>
+
                   <div>
-                    <span className="text-[#A8BFA9] block text-[11px]">PM2.5:</span>
-                    <span className="font-medium text-white">{currentDemo.pm25} µg/m³</span>
+                    <span className="text-[#A8BFA9] block text-[11px]">
+                      PM2.5:
+                    </span>
+                    <span className="font-medium text-white">
+                      {currentDemo.pm25} µg/m³
+                    </span>
                   </div>
+
                   <div>
-                    <span className="text-[#A8BFA9] block text-[11px]">PM10:</span>
-                    <span className="font-medium text-white">{currentDemo.pm10} µg/m³</span>
+                    <span className="text-[#A8BFA9] block text-[11px]">
+                      PM10:
+                    </span>
+                    <span className="font-medium text-white">
+                      {currentDemo.pm10} µg/m³
+                    </span>
                   </div>
                 </div>
 
                 {/* Footer link */}
                 <div className="pt-2 flex items-center justify-between text-xs text-[#A8BFA9]">
-                  <span className="text-[11px]">CPCB Observation Benchmark</span>
+                  <span className="text-[11px]">
+                    CPCB Observation Benchmark
+                  </span>
+
                   <Link
                     to="/forecast"
                     className="text-[#B7E46A] hover:underline flex items-center gap-1 font-medium"
                   >
-                    Open Forecaster <ChevronRight className="w-3 h-3" />
+                    Open Forecaster
+                    <ChevronRight className="w-3 h-3" />
                   </Link>
                 </div>
               </div>
@@ -228,50 +309,39 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* PLATFORM MODULES (4 CARDS) */}
+      {/* PLATFORM MODULES */}
       <section id="overview" className="py-16 bg-white border-b border-[#E3E8E1]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div>
             <h2 className="text-2xl font-bold font-heading text-[#17231C]">
               Platform Modules
             </h2>
+
             <p className="text-xs sm:text-sm text-[#69766E] mt-0.5">
               Tools for exploring city forecasts, long-term trends, and health guidelines.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <BentoCard
-              title="AQI Forecasting"
-              icon={Wind}
-            >
+            <BentoCard title="AQI Forecasting" icon={Wind}>
               <p className="text-xs text-[#69766E] leading-relaxed mt-1">
                 Generate next-day AQI predictions for any of the 18 eligible cities based on historical base dates.
               </p>
             </BentoCard>
 
-            <BentoCard
-              title="Historical Trends"
-              icon={LineChart}
-            >
+            <BentoCard title="Historical Trends" icon={LineChart}>
               <p className="text-xs text-[#69766E] leading-relaxed mt-1">
                 View 5-year monthly patterns showing winter peaks, monsoon dips, and annual trajectories.
               </p>
             </BentoCard>
 
-            <BentoCard
-              title="City Comparison"
-              icon={GitCompare}
-            >
+            <BentoCard title="City Comparison" icon={GitCompare}>
               <p className="text-xs text-[#69766E] leading-relaxed mt-1">
                 Compare air quality averages, seasonal curves, and model error between any two cities.
               </p>
             </BentoCard>
 
-            <BentoCard
-              title="Health Guidance"
-              icon={HeartPulse}
-            >
+            <BentoCard title="Health Guidance" icon={HeartPulse}>
               <p className="text-xs text-[#69766E] leading-relaxed mt-1">
                 Clear health advisories, mask recommendations, and precautions based on CPCB categories.
               </p>
@@ -287,6 +357,7 @@ export function LandingPage() {
             <h2 className="text-2xl font-bold font-heading text-[#17231C]">
               How the Forecasting Engine Works
             </h2>
+
             <p className="text-xs sm:text-sm text-[#69766E] mt-0.5">
               A 3-step pipeline converting historical observations into next-day estimates.
             </p>
@@ -317,39 +388,105 @@ export function LandingPage() {
       {/* MODEL BENCHMARKS */}
       <section id="benchmarks" className="py-16 bg-white border-b border-[#E3E8E1]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+
           <div>
             <h2 className="text-2xl font-bold font-heading text-[#17231C]">
               Model Evaluation
             </h2>
+
             <p className="text-xs sm:text-sm text-[#69766E] mt-0.5">
-              Cross-validation error across evaluated models.
+              Final model performance on unseen cities and future dates.
             </p>
           </div>
 
-          <div className="rounded-xl border border-[#E3E8E1] bg-white overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-[#102C22] text-white">
-                <tr>
-                  <th className="py-3 px-4 font-semibold">Model</th>
-                  <th className="py-3 px-4 font-semibold">Mean CV MAE</th>
-                  <th className="py-3 px-4 font-semibold">Std Error</th>
-                  <th className="py-3 px-4 font-semibold">Lowest Error Station</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#E3E8E1]">
-                {MODEL_BENCHMARKS.map((item, idx) => (
-                  <tr key={item.model} className={idx === 0 ? 'bg-[#DDEBE0]/30 font-medium' : ''}>
-                    <td className="py-3 px-4 text-[#17231C]">{item.model}</td>
-                    <td className="py-3 px-4 font-mono font-bold text-[#173D2D]">
-                      {item.meanCvMae.toFixed(1)} pts
-                    </td>
-                    <td className="py-3 px-4 font-mono text-[#69766E]">±{item.stdCvMae.toFixed(1)}</td>
-                    <td className="py-3 px-4 text-[#17231C]">{item.bestCity}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {benchmarkLoading ? (
+            <p className="text-sm text-[#69766E] py-6">
+              Loading model evaluation results...
+            </p>
+          ) : benchmarkError ? (
+            <p className="text-sm text-red-600 py-6">
+              Unable to load model benchmarks: {benchmarkError}
+            </p>
+          ) : (
+            <div className="space-y-5">
+              {Object.entries(benchmarkData || {}).map(([key, result]) => (
+                <div
+                  key={key}
+                  className="rounded-xl border border-[#E3E8E1] bg-white overflow-hidden"
+                >
+                  <div className="p-4 bg-[#F7F8F4] flex flex-wrap justify-between gap-2">
+                    <div>
+                      <h3 className="font-bold text-sm text-[#17231C]">
+                        {result.split}
+                      </h3>
+
+                      <p className="text-xs text-[#69766E] mt-1">
+                        {result.evaluation_rows.toLocaleString()} evaluation records
+                        {' · '}
+                        {result.cities} cities
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-[#102C22] text-white">
+                        <tr>
+                          <th className="py-3 px-4 font-semibold">Model</th>
+                          <th className="py-3 px-4 font-semibold">MAE</th>
+                          <th className="py-3 px-4 font-semibold">RMSE</th>
+                          <th className="py-3 px-4 font-semibold">R²</th>
+                        </tr>
+                      </thead>
+
+                      <tbody className="divide-y divide-[#E3E8E1]">
+                        {[
+                          {
+                            name: 'Random Forest',
+                            metrics: result.random_forest,
+                          },
+                          {
+                            name: 'Persistence Baseline',
+                            metrics: result.persistence_baseline,
+                          },
+                        ].map((item, index) => (
+                          <tr
+                            key={item.name}
+                            className={
+                              index === 0
+                                ? 'bg-[#DDEBE0]/30 font-medium'
+                                : ''
+                            }
+                          >
+                            <td className="py-3 px-4 text-[#17231C]">
+                              {item.name}
+                            </td>
+
+                            <td className="py-3 px-4 font-mono font-bold text-[#173D2D]">
+                              {item.metrics.mae.toFixed(2)} pts
+                            </td>
+
+                            <td className="py-3 px-4 font-mono text-[#69766E]">
+                              {item.metrics.rmse.toFixed(2)} pts
+                            </td>
+
+                            <td className="py-3 px-4 font-mono text-[#17231C]">
+                              {item.metrics.r2.toFixed(4)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <p className="text-[11px] text-[#69766E]">
+            MAE and RMSE are measured in AQI points. Lower error is better.
+            Higher R² indicates better explanatory performance.
+          </p>
         </div>
       </section>
 
@@ -360,6 +497,7 @@ export function LandingPage() {
             <h2 className="text-2xl font-bold font-heading text-[#17231C]">
               Eligible Cities (18 Stations)
             </h2>
+
             <p className="text-xs sm:text-sm text-[#69766E] mt-0.5">
               High-completeness reporting stations from the CPCB dataset (2015 to July 2020).
             </p>
@@ -371,8 +509,14 @@ export function LandingPage() {
                 key={c.name}
                 className="p-3 rounded-lg bg-white border border-[#E3E8E1] text-xs"
               >
-                <div className="font-semibold text-[#17231C] truncate">{c.name}</div>
-                <div className="text-[10px] text-[#69766E] truncate">{c.state}</div>
+                <div className="font-semibold text-[#17231C] truncate">
+                  {c.name}
+                </div>
+
+                <div className="text-[10px] text-[#69766E] truncate">
+                  {c.state}
+                </div>
+
                 <div className="text-[10px] text-[#173D2D] font-mono mt-1">
                   Avg {Math.round(c.avgAqi)} AQI
                 </div>
@@ -388,9 +532,11 @@ export function LandingPage() {
           <h2 className="text-2xl sm:text-4xl font-bold font-heading text-white">
             Explore Air Quality Predictions
           </h2>
+
           <p className="text-xs sm:text-sm text-[#A8BFA9] max-w-xl mx-auto">
             Access the forecasting dashboard, inspect historical trends, and review health advisories.
           </p>
+
           <div className="pt-2 flex items-center justify-center">
             <Button
               onClick={handleStart}

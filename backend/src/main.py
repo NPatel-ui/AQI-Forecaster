@@ -14,19 +14,21 @@ except ImportError:
     from prediction_service import predict_city_aqi
 
 
-# Project paths
+# --------------------------------------------------
+# PROJECT PATHS
+# --------------------------------------------------
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-MODEL_PATH = (
-    PROJECT_ROOT / "models" / "random_forest_aqi.joblib"
-)
-
-FEATURE_PATH = (
-    PROJECT_ROOT / "models" / "feature_names.txt"
-)
+MODEL_PATH = PROJECT_ROOT / "models" / "random_forest_aqi.joblib"
+FEATURE_PATH = PROJECT_ROOT / "models" / "feature_names.txt"
+BENCHMARK_PATH = PROJECT_ROOT / "report" / "final_evaluation.csv"
 
 
-# Load the trained model and feature order
+# --------------------------------------------------
+# LOAD TRAINED MODEL
+# --------------------------------------------------
+
 model = joblib.load(MODEL_PATH)
 
 FEATURES = FEATURE_PATH.read_text(
@@ -34,26 +36,34 @@ FEATURES = FEATURE_PATH.read_text(
 ).splitlines()
 
 
-# Create FastAPI application
+# --------------------------------------------------
+# FASTAPI APPLICATION
+# --------------------------------------------------
+
 app = FastAPI(
     title="AQI Forecaster API",
     description=(
         "Predict next-day AQI using a trained Random Forest model "
         "and historical city-level air-quality data."
     ),
-    version="1.1.0",
+    version="1.2.0",
 )
 
 
-# Validate manual prediction data
+# --------------------------------------------------
+# INPUT VALIDATION
+# --------------------------------------------------
+
 class AQIInput(BaseModel):
     aqi_today: float = Field(ge=0)
     aqi_1d_ago: float = Field(ge=0)
     aqi_2d_ago: float = Field(ge=0)
     aqi_7d_ago: float = Field(ge=0)
+
     roll3_mean: float = Field(ge=0)
     roll7_mean: float = Field(ge=0)
     roll7_std: float = Field(ge=0)
+
     change_1d: float
 
     PM2_5_today: float | None = Field(
@@ -73,6 +83,10 @@ class AQIInput(BaseModel):
     day_of_week: int = Field(ge=0, le=6)
 
 
+# --------------------------------------------------
+# HOME ENDPOINT
+# --------------------------------------------------
+
 @app.get("/")
 def home():
     return {
@@ -82,9 +96,14 @@ def home():
             "/health",
             "/predict",
             "/forecast/{city}",
+            "/benchmarks",
         ],
     }
 
+
+# --------------------------------------------------
+# HEALTH CHECK
+# --------------------------------------------------
 
 @app.get("/health")
 def health():
@@ -95,7 +114,116 @@ def health():
     }
 
 
-# Existing manual prediction endpoint
+# --------------------------------------------------
+# MODEL BENCHMARKS
+# --------------------------------------------------
+
+@app.get("/benchmarks")
+def get_model_benchmarks():
+
+    if not BENCHMARK_PATH.exists():
+        raise HTTPException(
+            status_code=404,
+            detail="Model evaluation report not found."
+        )
+
+    try:
+        df = pd.read_csv(BENCHMARK_PATH)
+
+        required_columns = [
+            "split",
+            "rows",
+            "cities",
+            "rf_mae",
+            "rf_rmse",
+            "rf_r2",
+            "baseline_mae",
+            "baseline_rmse",
+            "baseline_r2",
+        ]
+
+        missing_columns = [
+            column
+            for column in required_columns
+            if column not in df.columns
+        ]
+
+        if missing_columns:
+            raise HTTPException(
+                status_code=500,
+                detail={
+                    "message": "Evaluation report is missing required columns.",
+                    "missing_columns": missing_columns,
+                }
+            )
+
+        benchmarks = {}
+
+        for _, row in df.iterrows():
+
+            split_name = str(row["split"]).strip().upper()
+
+            if "TEST A" in split_name:
+                result_key = "test_a_unseen_cities"
+
+            elif "TEST B" in split_name:
+                result_key = "test_b_future_dates"
+
+            else:
+                continue
+
+            benchmarks[result_key] = {
+                "split": str(row["split"]),
+                "evaluation_rows": int(row["rows"]),
+                "cities": int(row["cities"]),
+
+                "random_forest": {
+                    "mae": round(float(row["rf_mae"]), 2),
+                    "rmse": round(float(row["rf_rmse"]), 2),
+                    "r2": round(float(row["rf_r2"]), 4),
+                },
+
+                "persistence_baseline": {
+                    "mae": round(float(row["baseline_mae"]), 2),
+                    "rmse": round(float(row["baseline_rmse"]), 2),
+                    "r2": round(float(row["baseline_r2"]), 4),
+                },
+            }
+
+        if not benchmarks:
+            raise HTTPException(
+                status_code=500,
+                detail="No valid benchmark results found."
+            )
+
+        return {
+            "model": "RandomForestRegressor",
+            "evaluation_source": "final_evaluation.csv",
+            "unit": "AQI points for MAE and RMSE",
+
+            "metrics_explanation": {
+                "MAE": "Mean Absolute Error. Lower is better.",
+                "RMSE": "Root Mean Squared Error. Lower is better.",
+                "R2": "Coefficient of determination. Higher is better.",
+            },
+
+            "benchmarks": benchmarks,
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Unable to load model benchmarks: {str(exc)}"
+        ) from exc
+
+
+# --------------------------------------------------
+# MANUAL PREDICTION ENDPOINT
+# --------------------------------------------------
+
 @app.post("/predict")
 def predict_aqi(data: AQIInput):
 
@@ -128,7 +256,10 @@ def predict_aqi(data: AQIInput):
         ) from exc
 
 
-# New automatic city-based forecasting endpoint
+# --------------------------------------------------
+# AUTOMATIC CITY-BASED FORECASTING
+# --------------------------------------------------
+
 @app.get("/forecast/{city}")
 def forecast_city(
     city: str,
